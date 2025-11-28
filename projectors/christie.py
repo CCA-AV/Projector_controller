@@ -1,10 +1,7 @@
 import time as root_time
 import requests
 
-default_login = {
-    "username": "user",
-    "password": "1978"
-}
+default_login = {"username": "user", "password": "1978"}
 
 control_page = "/html/remote.html"
 
@@ -19,11 +16,11 @@ commands = {
         "default_kvjoiner": ":",
         "default_kjoiner": ",",
         "params": [
-            ['p', str(0x01)],
-            ['c', str(0x1213)],
-            ['v', str(2)],
-            ['v', str(0x001d)]
-        ]
+            ["p", str(0x01)],
+            ["c", str(0x1213)],
+            ["v", str(2)],
+            ["v", str(0x001D)],
+        ],
     },
     "power_off": {
         "type": "power",
@@ -33,36 +30,37 @@ commands = {
         "default_kvjoiner": ":",
         "default_kjoiner": ",",
         "params": [
-            ['p', str(0x01)],
-            ['c', str(0x1213)],
-            ['v', str(2)],
-            ['v', str(0x001e)]
-        ]
-         },
+            ["p", str(0x01)],
+            ["c", str(0x1213)],
+            ["v", str(2)],
+            ["v", str(0x001E)],
+        ],
+    },
 }
 
 
-def request_status(user,password,ip):
+def request_status(user, password, ip):
     try:
-        Power_Get = 'p:' + str(0x02) + ',c:' + str(0x6000) + ',v:' + str(0)
-        myUrl = f"http://{ip}/cgi-bin/webctrl.cgi.elf?" + '&' + Power_Get
+        Power_Get = "p:" + str(0x02) + ",c:" + str(0x6000) + ",v:" + str(0)
+        myUrl = f"http://{ip}/cgi-bin/webctrl.cgi.elf?" + "&" + Power_Get
         x = requests.post(myUrl)
         data = x.json()
-        if data[0]['val'] == [1]:
+        if data[0]["val"] == [1]:
             return True
         else:
             return False
     except Exception as e:
         print(e)
         return False
-    
-def request_source(user,password,ip):
+
+
+def request_source(user, password, ip):
     try:
-        Input_Get = 'p:' + str(0x02) + ',c:' + str(0x2000) + ',v:' + str(0)
-        myUrl = f"http://{ip}/cgi-bin/webctrl.cgi.elf?" + '&' + Input_Get
+        Input_Get = "p:" + str(0x02) + ",c:" + str(0x2000) + ",v:" + str(0)
+        myUrl = f"http://{ip}/cgi-bin/webctrl.cgi.elf?" + "&" + Input_Get
         x = requests.post(myUrl)
         data = x.json()
-        source = data[0]['val'][0]
+        source = data[0]["val"][0]
         if source == 3:
             return "HDMI 1"
         elif source == 13:
@@ -87,5 +85,6 @@ def request_source(user,password,ip):
         print(e)
         return None
 
+
 def time():
-    return str(round(root_time.time()*1000))
+    return str(round(root_time.time() * 1000))
