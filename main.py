@@ -28,6 +28,7 @@ class ProjectorControllerFrame(ntk.Frame):
 
     def __init__(self, master, proj: Projector, meta: Dict, *args, **kwargs):
         super().__init__(master, fill=FRAME_BACKGROUND, *args, **kwargs)
+        self.hide()
         self.proj = proj
         self.meta = meta
 
@@ -82,9 +83,7 @@ class ProjectorControllerFrame(ntk.Frame):
                 text=name,
                 font=("Arial", 10),
                 width=72,
-                height=24,
-                mode="momentary",
-                bounds_type="box",
+                height=24
             )
 
             def make_handler(command_name: str):
@@ -98,7 +97,7 @@ class ProjectorControllerFrame(ntk.Frame):
                         try:
                             self.proj.toggle(command_name)
                         except Exception:
-                            pass
+                            print(e)
 
                 return handler
 
@@ -122,17 +121,15 @@ class ProjectorControllerFrame(ntk.Frame):
                 text=name,
                 font=("Arial", 10),
                 width=72,
-                height=24,
-                mode="toggle",
-                bounds_type="box",
+                height=24
             )
 
             def make_handler(command_name: str):
                 def handler():
                     try:
                         self.proj.toggle(command_name)
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        print(e)
 
                 return handler
 
@@ -158,7 +155,7 @@ class ProjectorControllerFrame(ntk.Frame):
 
         def on_power():
             # Button's active state determines desired power
-            if self.power_button.active:
+            if self.power_button.state:
                 self.proj.on()
             else:
                 self.proj.off()
@@ -176,7 +173,7 @@ class ProjectorControllerFrame(ntk.Frame):
         except Exception:
             is_on = False
 
-        if is_on and not self.power_button.active:
+        if is_on and not self.power_button.state:
             # Toggle to "on" without triggering callback
             self.power_button.clicked()
         elif (not is_on) and self.power_button.state:
@@ -222,6 +219,7 @@ def create_app():
             height=frame_height - 8,
         )
         frame.place(x=8, y=8 + idx * frame_height)
+        frame.show()
 
     return window
 
