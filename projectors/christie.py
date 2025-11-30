@@ -126,7 +126,7 @@ commands = {
         "duplicate": False,
         "path": "/cgi-bin/webctrl.cgi.elf?&",
         "default_kvjoiner": ":",
-        "default_kvjoiner": ",",
+        "default_kjoiner": ",",
         "params": [
             ["p", str(0x01)],
             ["c", str(0x1213)],
