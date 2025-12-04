@@ -23,6 +23,11 @@ def list_projector_types() -> List[str]:
 
 def load_projectors_from_json(path: str = "data.json") -> List[Dict]:
     """Load persisted projector metadata."""
+    if not Path(path).exists():
+        import auto_discover
+
+        data = auto_discover.auto_discover()
+        auto_discover.save_discovery_results(data, "data.json")
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
     # Only use resolved projectors for full control
