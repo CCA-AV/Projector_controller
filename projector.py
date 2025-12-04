@@ -34,11 +34,7 @@ class Projector:
         """
         url, mode, duplicate = self.generate_command(command_name)
 
-        if mode == "get":
-            caller = requests.get
-        else:
-            caller = requests.post
-
+        caller = requests.get if mode == "get" else requests.post
         response = caller(url, headers=self.projector_lib.req_headers)
         if duplicate:
             time.sleep(0.5)
@@ -78,7 +74,9 @@ class Projector:
         targets = []
         for target, cycle in self.projector_lib.TARGET_TO_CYCLE_COMMAND.items():
             if cycle == target_cycle:
-                if target.lower().replace(" ","").replace('-','') in [i.lower().replace(" ","") for i in targets]:
+                if target.lower().replace(" ", "").replace("-", "") in [
+                    i.lower().replace(" ", "") for i in targets
+                ]:
                     continue
                 targets.append(target)
         return targets
@@ -114,10 +112,7 @@ class Projector:
                 time.sleep(0.5)
 
             # Final check after last press
-            if self.source() == target_source:
-                return True
-            return False
-
+            return self.source() == target_source
         # Otherwise, fall back to direct source commands where available
         name_map = {
             "HDMI 1": "HDMI1",
@@ -147,13 +142,13 @@ print(proj.source())
 def determine(ip):
     try:
         x = requests.get(f"http://{ip}/html/remote.html", timeout=0.5)
-        if x.status_code in (401, 200):
+        if x.status_code in {401, 200}:
             return "Cristie"
         elif x.status_code == 404:
             x = requests.get(
                 f"http://{ip}/cgi-bin/webconf", headers=headers, timeout=0.5
             )
-            if x.status_code in (401, 200):
+            if x.status_code in {401, 200}:
                 return "Epson"
         return None
     except Exception as e:
@@ -161,8 +156,7 @@ def determine(ip):
 
 
 def discover():
-    for i in range(0, 255):
+    for i in range(255):
         ip = f"192.168.0.{i}"
-        projector = determine(ip)
-        if projector:
+        if projector := determine(ip):
             print(ip, projector)

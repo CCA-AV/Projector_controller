@@ -22,9 +22,11 @@ def _iter_projector_types() -> List[str]:
     """
     package = importlib.import_module(PROJECTORS_PACKAGE)
     types: List[str] = []
-    for _, module_name, is_pkg in pkgutil.iter_modules(package.__path__):
-        if not is_pkg:
-            types.append(module_name)
+    types.extend(
+        module_name
+        for _, module_name, is_pkg in pkgutil.iter_modules(package.__path__)
+        if not is_pkg
+    )
     return types
 
 
@@ -53,12 +55,9 @@ def _format_headers(headers: Dict[str, str], ip: str) -> Dict[str, str]:
     Some projector modules define headers that include '{ip}'.
     Format those placeholders if present.
     """
-    out: Dict[str, str] = {}
-    for k, v in headers.items():
-        if isinstance(v, str):
-            out[k] = v.format(ip=ip)
-        else:
-            out[k] = v
+    out: Dict[str, str] = {
+        k: v.format(ip=ip) if isinstance(v, str) else v for k, v in headers.items()
+    }
     return out
 
 

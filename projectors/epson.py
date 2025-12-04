@@ -130,17 +130,11 @@ TARGET_TO_CYCLE_COMMAND = {
 def request_status(user, password, ip):
     p = "05"
     base_url = f"http://{user}:{password}@{ip}"
-    relative_path = "/cgi-bin/webconf"
-    full_url = base_url + relative_path
-
     payload = {"page": p}
+    full_url = f"{base_url}/cgi-bin/webconf"
     try:
         response = requests.post(full_url, data=payload)
-        if "The projector is currently on standby" in response.text:
-            return False
-        else:
-            return True
-
+        return "The projector is currently on standby" not in response.text
     except requests.exceptions.RequestException as e:
         return False
 
@@ -148,19 +142,15 @@ def request_status(user, password, ip):
 def request_source(user, password, ip):
     p = "05"
     base_url = f"http://{user}:{password}@{ip}"
-    relative_path = "/cgi-bin/webconf"
-    full_url = base_url + relative_path
-
     payload = {"page": p}
+    full_url = f"{base_url}/cgi-bin/webconf"
     try:
         response = requests.post(full_url, data=payload)
         if "The projector is currently on standby" in response.text:
             return None
-        else:
-            text = response.text
-            idx = text.find("Source")
-            source = text[idx + 155 : idx + 166].strip(" ").split("<")[0]
-            return source
+        text = response.text
+        idx = text.find("Source")
+        return text[idx + 155 : idx + 166].strip(" ").split("<")[0]
     except requests.exceptions.RequestException as e:
         return None
 
