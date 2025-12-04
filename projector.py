@@ -6,15 +6,22 @@ import importlib
 
 
 class Projector:
-    def __init__(self, ip, projector_type):
+    def __init__(self, ip, projector_type, username=None, password=None):
         self.ip = ip
         self.projector_type = projector_type
         self.projector_lib = importlib.import_module(f"projectors.{projector_type}")
+        self._username_override = username or None
+        self._password_override = password or None
+
+    def _credentials(self):
+        defaults = self.projector_lib.default_login
+        user = self._username_override or defaults["username"]
+        password = self._password_override or defaults["password"]
+        return user, password
 
     def generate_command(self, command):
         command = self.projector_lib.commands[command]
-        user = self.projector_lib.default_login["username"]
-        password = self.projector_lib.default_login["password"]
+        user, password = self._credentials()
         url = f"http://{user}:{password}@{self.ip}{command['path']}"
         for param in command["params"]:
             key = param[0]
@@ -60,14 +67,12 @@ class Projector:
 
     def status(self):
         ip = self.ip
-        user = self.projector_lib.default_login["username"]
-        password = self.projector_lib.default_login["password"]
+        user, password = self._credentials()
         return self.projector_lib.request_status(user, password, ip)
 
     def source(self):
         ip = self.ip
-        user = self.projector_lib.default_login["username"]
-        password = self.projector_lib.default_login["password"]
+        user, password = self._credentials()
         return self.projector_lib.request_source(user, password, ip)
 
     def toggle(self, command_name):

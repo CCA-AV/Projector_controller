@@ -209,6 +209,7 @@ def request_status(user, password, ip):
     """
     Mirror the Christie semantics: True when powered on, False otherwise.
     """
+    print(password, user, ip)
     return _POWER_ON
 
 
