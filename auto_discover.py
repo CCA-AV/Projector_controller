@@ -16,6 +16,14 @@ PING_TIMEOUT = 0.3
 PROBE_TIMEOUT = 0.5
 
 
+def _default_name_for_type(projector_type: str) -> str:
+    """
+    Derive a human-friendly default name from a projector type string.
+    Example: "test_projector" -> "Test Projector".
+    """
+    return projector_type.replace("_", " ").title()
+
+
 def _iter_projector_types() -> List[str]:
     """
     Automatically discover all projector type modules in the `projectors` package.
@@ -102,6 +110,7 @@ def _probe_projector_type(
             "projector_type": projector_type,
             "username": username,
             "password": password,
+            "name": _default_name_for_type(projector_type),
         }
         return "high", payload
 
@@ -115,6 +124,7 @@ def _probe_projector_type(
             payload = {
                 "ip": ip,
                 "projector_type": projector_type,
+                "name": _default_name_for_type(projector_type),
             }
             return "low", payload
 
@@ -125,6 +135,7 @@ def _probe_projector_type(
                 "projector_type": projector_type,
                 "username": username,
                 "password": password,
+                "name": _default_name_for_type(projector_type),
             }
             return "high", payload
 
@@ -133,6 +144,7 @@ def _probe_projector_type(
             payload = {
                 "ip": ip,
                 "projector_type": projector_type,
+                "name": _default_name_for_type(projector_type),
             }
             return "low", payload
 

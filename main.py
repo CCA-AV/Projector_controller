@@ -10,9 +10,9 @@ WINDOW_BACKGROUND = "#181818"
 FRAME_BACKGROUND = "#242424"
 TEXT_COLOR = "#ffffff"
 ACCENT_COLOR = "#569e6a"
-ACCENT_COLOR_HOVER = "#4a845a"
+ACCENT_COLOR_HOVER = "#3e734c"
 DISABLED_COLOR = "#6e6e6e"
-DISABLED_COLOR_HOVER = "#5a5a5a"
+DISABLED_COLOR_HOVER = "#4a4a4a"
 
 
 class ProjectorControllerFrame(ntk.Frame):
@@ -49,7 +49,12 @@ class ProjectorControllerFrame(ntk.Frame):
     # ------------------------------------------------------------------ UI
     def _build_ui(self):
         # Name section
-        name = self.meta.get("name") or self.meta.get("projector_type", "Projector")
+        # Prefer a stored custom name; otherwise derive a human-friendly default
+        # from the projector type (e.g. "test_projector" -> "Test Projector").
+        name = self.meta.get("name")
+        if not name:
+            proj_type = self.meta.get("projector_type", "Projector")
+            name = proj_type.replace("_", " ").title()
         self.name_label = ntk.Entry(
             self,
             text=name,
@@ -80,7 +85,7 @@ class ProjectorControllerFrame(ntk.Frame):
         x = 8
 
         def build_button(x, name, cmd):
-            btn = ntk.Button(self, text=name, font="Arial", width=72, height=24)
+            btn = ntk.Button(self, text=name, width=72, height=24)
 
             def make_handler(command_name: str):
                 def handler():
@@ -130,7 +135,7 @@ class ProjectorControllerFrame(ntk.Frame):
             if cmd.get("type") not in ("feature", "toggle"):
                 continue
 
-            btn = ntk.Button(self, text=name, font=("Arial", 10), width=72, height=24)
+            btn = ntk.Button(self, text=name, width=72, height=24)
 
             def make_handler(command_name: str):
                 def handler():
@@ -200,6 +205,7 @@ def create_app():
     projector_defs = load_projectors_from_json()
 
     # Simple layout: vertical stack of controller frames
+    frames = []
     frame_height = 120
     window_height = max(frame_height * len(projector_defs), frame_height)
     window_width = 400
@@ -226,6 +232,7 @@ def create_app():
             width=window_width - 16,
             height=frame_height - 8,
         )
+        frames.append(frame)
         window_height += frame.height - frame_height + 10
 
         window.root.geometry(f"{window_width}x{window_height}")
@@ -235,6 +242,47 @@ def create_app():
         background.update()
         frame.place(x=8, y=8 + idx * frame_height)
         frame.show()
+
+    def _save_names_and_close():
+        """
+        Persist any edited projector names back to data.json before closing.
+        """
+        try:
+            with open("data.json", "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception:
+            data = {}
+
+        resolved = data.get("resolved", [])
+
+        # Update entries in order; if the JSON has fewer entries than frames,
+        # update only what exists.
+        for idx, frame in enumerate(frames):
+            if idx >= len(resolved):
+                break
+            name_value = frame.name_label.get()
+
+            if name_value:
+                resolved[idx]["name"] = str(name_value)
+
+        data["resolved"] = resolved
+
+        try:
+            with open("data.json", "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+        except Exception:
+            # If saving fails, still allow the window to close.
+            pass
+
+        window.root.destroy()
+
+    # Ensure that closing the window saves any edited names.
+    try:
+        window.root.protocol("WM_DELETE_WINDOW", _save_names_and_close)
+    except Exception:
+        # If the underlying window object does not expose a Tk-like `protocol`,
+        # we simply skip automatic saving on close.
+        pass
 
     return window
 
