@@ -1,0 +1,8 @@
+*
+!*/
+!*.py
+*.pyc
+!*.png
+OLD_*
+dist/
+!.gitignore
