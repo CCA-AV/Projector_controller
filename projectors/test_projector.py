@@ -173,7 +173,7 @@ def _set_source_from_command(command_name: str) -> None:
     global _CURRENT_SOURCE
     global _POWER_ON
     if not _POWER_ON:
-        raise Exception("Projector is not powered on")
+        raise ValueError("Projector is not powered on")
     if command_name == "HDMI1":
         _CURRENT_SOURCE = "HDMI 1"
     elif command_name == "HDMI2":
@@ -198,7 +198,7 @@ def handle_command(command_name: str, projector_instance) -> None:
         # Keep whatever source was last chosen
     elif command_name == "power_off":
         _POWER_ON = False
-    elif command_name in ("HDMI1", "HDMI2", "HDBASET", "COMPUTER1"):
+    elif command_name in {"HDMI1", "HDMI2", "HDBASET", "COMPUTER1"}:
         _set_source_from_command(command_name)
     elif command_name in _FEATURES:
         # Simple toggle behaviour for features
@@ -217,9 +217,7 @@ def request_source(user, password, ip):
     """
     Return the current source in the same format as Christie.request_source.
     """
-    if not _POWER_ON:
-        return None
-    return _CURRENT_SOURCE
+    return _CURRENT_SOURCE if _POWER_ON else None
 
 
 def time():

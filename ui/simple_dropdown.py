@@ -145,4 +145,3 @@ class SimpleDropdown(ntk.Frame):
 
     def _update_options_position(self):
         self.options_frame.place(x=self.x, y=self.y + self.height)
-

@@ -92,14 +92,16 @@ def create_projector_app(
             height=ui_constants.FRAME_HEIGHT,
         )
         frames.append(frame)
-        window_height += frame.height - ui_constants.FRAME_HEIGHT + ui_constants.FRAME_SPACING * 2
+        window_height += (
+            frame.height - ui_constants.FRAME_HEIGHT + ui_constants.FRAME_SPACING * 2
+        )
 
         frame.place(
             x=ui_constants.FRAME_SPACING,
-            y=ui_constants.FRAME_SPACING + idx * (ui_constants.FRAME_HEIGHT + ui_constants.FRAME_SPACING),
+            y=ui_constants.FRAME_SPACING
+            + idx * (ui_constants.FRAME_HEIGHT + ui_constants.FRAME_SPACING),
         )
         frame.show()
     background.configure(height=window_height)
     window.resize(window_width, window_height)
     return window
-

@@ -34,4 +34,3 @@ class LoadingIndicator:
         if self._active == 0:
             self.label.hide()
         return False
-

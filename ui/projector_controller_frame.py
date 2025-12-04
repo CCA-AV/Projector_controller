@@ -202,9 +202,14 @@ class ProjectorControllerFrame(ntk.Frame):
             if cmd.get("type") == "source_cycle":
                 for target in self.proj.get_targets(name):
                     build_button(x, target, cmd)
-                    if x >= (ui_constants.BUTTON_SPACING + ui_constants.BUTTON_WIDTH) * 3:
+                    if (
+                        x
+                        >= (ui_constants.BUTTON_SPACING + ui_constants.BUTTON_WIDTH) * 3
+                    ):
                         x = ui_constants.FRAME_SPACING
-                        y_start += ui_constants.BUTTON_SPACING + ui_constants.BUTTON_HEIGHT
+                        y_start += (
+                            ui_constants.BUTTON_SPACING + ui_constants.BUTTON_HEIGHT
+                        )
                     else:
                         x += ui_constants.BUTTON_SPACING + ui_constants.BUTTON_WIDTH
 
@@ -344,7 +349,9 @@ class ProjectorControllerFrame(ntk.Frame):
         column_width = (panel_width - content_x * 2 - column_gap) / 2
         row_height = 38
 
-        def place_entry(label_text: str, key: str, default_value: str, x: float, y: float):
+        def place_entry(
+            label_text: str, key: str, default_value: str, x: float, y: float
+        ):
             label = ntk.Label(
                 self.settings_panel,
                 text=label_text,
@@ -608,12 +615,11 @@ class ProjectorControllerFrame(ntk.Frame):
         print(current_source)
         if current_source:
             for button in self.source_buttons:
-                if button.text.lower().replace(" ", "") == current_source.lower().replace(
+                if button.text.lower().replace(
                     " ", ""
-                ):
+                ) == current_source.lower().replace(" ", ""):
                     self._radio_switch(button)
                     break
 
     def _loading_context(self):
         return self.loading_indicator or contextlib.nullcontext()
-
