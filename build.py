@@ -23,7 +23,7 @@ UPDATER_DIR = ROOT / "updater"
 VERSION_FILE = ROOT / "version"
 WINDOWS_ZIP = ROOT / "windows.zip"
 WINDOWS_AUTO_ZIP = ROOT / "windows_autoupdating.zip"
-UPDATER_FILES = ("data.json", "projector_controller.exe")
+UPDATER_FILES = ("data.json", "Projector_Control.exe")
 
 
 def run_pyinstaller() -> None:
