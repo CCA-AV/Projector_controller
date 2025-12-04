@@ -1,0 +1,26 @@
+{
+  "resolved": [
+    {
+      "ip": "192.168.0.28",
+      "projector_type": "christie",
+      "username": "user",
+      "password": "1978"
+    },
+    {
+      "ip": "192.168.0.144",
+      "projector_type": "epson",
+      "username": "EPSONWEB",
+      "password": "ADMIN"
+    }
+  ],
+  "unauthorized": [
+    {
+      "ip": "192.168.0.25",
+      "projector_type": "christie"
+    },
+    {
+      "ip": "192.168.0.66",
+      "projector_type": "epson"
+    }
+  ]
+}

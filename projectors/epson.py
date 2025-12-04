@@ -81,8 +81,17 @@ commands = {
         "default_kjoiner": "&",
         "params": [["KEY", "47"], ["_", "$$time"]],
     },
+    "A/V MUTE": {
+        "type": "toggle",
+        "mode": "get",
+        "duplicate": False,
+        "path": "/cgi-bin/directsend?",
+        "default_kvjoiner": "=",
+        "default_kjoiner": "&",
+        "params": [["KEY", "3E"], ["_", "$$time"]],
+    },
     "SEARCH": {
-        "type": "action",
+        "type": "toggle",
         "mode": "get",
         "duplicate": False,
         "path": "/cgi-bin/directsend?",
@@ -101,7 +110,6 @@ TARGET_TO_CYCLE_COMMAND = {
     "HDMI2": "VIDEO",
     "HDMI 2": "VIDEO",
     "S-Video": "VIDEO",
-    "SVIDEO": "VIDEO",
     "Video": "VIDEO",
     "VIDEO": "VIDEO",
     # Computer sources
@@ -114,7 +122,6 @@ TARGET_TO_CYCLE_COMMAND = {
     # USB sources
     "USB": "USB",
     "USB Display": "USB",
-    "USBDISPLAY": "USB",
     # Network
     "LAN": "LAN",
 }
@@ -152,7 +159,7 @@ def request_source(user, password, ip):
         else:
             text = response.text
             idx = text.find("Source")
-            source = text[idx + 155 : idx + 165].strip(" ").split("<")[0]
+            source = text[idx + 155 : idx + 166].strip(" ").split("<")[0]
             return source
     except requests.exceptions.RequestException as e:
         return None

@@ -74,6 +74,15 @@ class Projector:
             )
         self._execute_command(command_name)
 
+    def get_targets(self, target_cycle):
+        targets = []
+        for target, cycle in self.projector_lib.TARGET_TO_CYCLE_COMMAND.items():
+            if cycle == target_cycle:
+                if target.lower().replace(" ","").replace('-','') in [i.lower().replace(" ","") for i in targets]:
+                    continue
+                targets.append(target)
+        return targets
+
     def set_source(self, target_source, max_attempts=12):
         """
         Set the projector to a given source.
@@ -98,7 +107,8 @@ class Projector:
             for _ in range(max_attempts):
                 # Re-check current source each loop; bail early if we've reached target
                 current = self.source()
-                if current == target_source:
+                print(current, target_source)
+                if current.lower() == target_source.lower():
                     return True
                 self._execute_command(cycle_cmd)
                 time.sleep(0.5)

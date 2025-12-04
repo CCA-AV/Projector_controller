@@ -28,6 +28,7 @@ class ProjectorControllerFrame(ntk.Frame):
 
     def __init__(self, master, proj: Projector, meta: Dict, *args, **kwargs):
         super().__init__(master, fill=FRAME_BACKGROUND, *args, **kwargs)
+        self.hide()
         self.proj = proj
         self.meta = meta
 
@@ -49,7 +50,7 @@ class ProjectorControllerFrame(ntk.Frame):
     def _build_ui(self):
         # Name section
         name = self.meta.get("name") or self.meta.get("projector_type", "Projector")
-        self.name_label = ntk.Label(
+        self.name_label = ntk.Entry(
             self,
             text=name,
             font=("Arial", 12, "bold"),
@@ -59,13 +60,17 @@ class ProjectorControllerFrame(ntk.Frame):
         self.name_label.place(x=8, y=6)
 
         # Source list section
-        self._build_sources_section(y_start=30)
+        y = self._build_sources_section(y_start=30)
 
         # Feature list section
-        self._build_features_section(y_start=70)
+        self._build_features_section(y_start=y)
 
         # Power button on the right
-        self._build_power_section(x_right=220, y_center=60)
+        self._build_power_section(x_right=370, y_center=60+((y-70)/2))
+
+        self.height=y+40
+        
+        self._update_children()
 
     def _build_sources_section(self, y_start: int):
         # Sources are commands where type == "source" or "source_cycle"
@@ -73,18 +78,14 @@ class ProjectorControllerFrame(ntk.Frame):
         self.source_buttons = []
 
         x = 8
-        for name, cmd in commands.items():
-            if cmd.get("type") not in ("source", "source_cycle"):
-                continue
 
+        def build_button(x, name, cmd):
             btn = ntk.Button(
                 self,
                 text=name,
-                font=("Arial", 10),
+                font="Arial",
                 width=72,
-                height=24,
-                mode="momentary",
-                bounds_type="box",
+                height=24
             )
 
             def make_handler(command_name: str):
@@ -98,14 +99,32 @@ class ProjectorControllerFrame(ntk.Frame):
                         try:
                             self.proj.toggle(command_name)
                         except Exception:
-                            pass
+                            print(e,"iamanexception")
 
                 return handler
 
             btn.command = make_handler(name)
             btn.place(x=x, y=y_start)
             self.source_buttons.append(btn)
-            x += 76
+            return btn
+        
+        for name, cmd in commands.items():
+            if cmd.get("type") not in ("source", "source_cycle"):
+                continue
+
+            if cmd.get("type") == "source_cycle":
+                for target in self.proj.get_targets(name):
+                    build_button(x, target, cmd)
+                    if x >= 76*3:
+                        x = 8
+                        y_start += 30
+                    else:
+                        x += 76
+                    
+            else:
+                build_button(x, name, cmd)
+                x += 76
+        return y_start+40
 
     def _build_features_section(self, y_start: int):
         # Features are commands where type == "feature" or "toggle"
@@ -122,17 +141,15 @@ class ProjectorControllerFrame(ntk.Frame):
                 text=name,
                 font=("Arial", 10),
                 width=72,
-                height=24,
-                mode="toggle",
-                bounds_type="box",
+                height=24
             )
 
             def make_handler(command_name: str):
                 def handler():
                     try:
                         self.proj.toggle(command_name)
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        print(e,"iamanexception")
 
                 return handler
 
@@ -158,7 +175,7 @@ class ProjectorControllerFrame(ntk.Frame):
 
         def on_power():
             # Button's active state determines desired power
-            if self.power_button.active:
+            if self.power_button.state:
                 self.proj.on()
             else:
                 self.proj.off()
@@ -176,7 +193,7 @@ class ProjectorControllerFrame(ntk.Frame):
         except Exception:
             is_on = False
 
-        if is_on and not self.power_button.active:
+        if is_on and not self.power_button.state:
             # Toggle to "on" without triggering callback
             self.power_button.clicked()
         elif (not is_on) and self.power_button.state:
@@ -221,8 +238,16 @@ def create_app():
             width=window_width - 16,
             height=frame_height - 8,
         )
-        frame.place(x=8, y=8 + idx * frame_height)
+        window_height += frame.height-frame_height+10
 
+        window.root.geometry(f"{window_width}x{window_height}")
+        window.canvas.configure(height=window_height)
+        window.root.update()
+        background.height=window_height
+        background.update()
+        frame.place(x=8, y=8 + idx * frame_height)
+        frame.show()
+    
     return window
 
 
