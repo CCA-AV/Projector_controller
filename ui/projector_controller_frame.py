@@ -309,6 +309,7 @@ class ProjectorControllerFrame(ntk.Frame):
             width=size,
             height=size,
             mode="standard",
+            bounds_type="box",
         )
         self.settings_button.command = self._toggle_settings_panel
         self.settings_button.place(x=ui_constants.FRAME_WIDTH - size - 5, y=4)
