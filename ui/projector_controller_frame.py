@@ -98,9 +98,8 @@ class ProjectorControllerFrame(ntk.Frame):
         self._build_settings_trigger()
 
         self.max_font_size = 100
-        for name, cmd in self.proj.projector_lib.commands.items():
-            if cmd.get("type") not in ("source", "source_cycle", "feature", "toggle"):
-                continue
+
+        def incr_size(name: str):
             max_for_name = ntk.fonts_manager.get_max_font_size(
                 self.master.root,
                 ("Arial", 12, "bold"),
@@ -110,6 +109,22 @@ class ProjectorControllerFrame(ntk.Frame):
             )
             if max_for_name < self.max_font_size:
                 self.max_font_size = max_for_name
+
+        for name, cmd in self.proj.projector_lib.commands.items():
+            if cmd.get("type") not in ("source", "source_cycle", "feature", "toggle"):
+                continue
+            if (
+                hasattr(
+                    self.proj.projector_lib, "TARGET_TO_CYCLE_COMMAND"
+                )  # hasattr to avoid AttributeError
+                and self.proj.projector_lib.TARGET_TO_CYCLE_COMMAND.get(name)
+                is not None
+            ):  # If the projector has a cycle command, increment the size for each target
+                for target in self.proj.get_targets(name):
+                    incr_size(target)  # Increment the size for each target
+            else:
+                incr_size(name)
+                # If the projector doesn't have a cycle command, increment the size for the name
 
         # Source list section
         y = self._build_sources_section(y_start=30)
