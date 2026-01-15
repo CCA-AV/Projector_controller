@@ -74,6 +74,7 @@ def create_projector_app(
         height=window_height,
     )
     background.place()
+    rolling_height = ui_constants.FRAME_SPACING
 
     for idx, meta in enumerate(projector_defs):
         print("creating frame for", meta["name"])
@@ -99,10 +100,10 @@ def create_projector_app(
 
         frame.place(
             x=ui_constants.FRAME_SPACING,
-            y=ui_constants.FRAME_SPACING
-            + idx * (ui_constants.FRAME_HEIGHT + ui_constants.FRAME_SPACING),
+            y=rolling_height,
         )
         frame.show()
+        rolling_height += frame.height + ui_constants.FRAME_SPACING
     background.configure(height=window_height)
     window.resize(window_width, window_height)
     return window
