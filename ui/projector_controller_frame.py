@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 
 import nebulatk as ntk
 
-from projector import Projector
+from modules.projector import Projector
 
 from . import constants as ui_constants
 from .loading_indicator import LoadingIndicator
