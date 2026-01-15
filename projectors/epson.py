@@ -120,6 +120,7 @@ TARGET_TO_CYCLE_COMMAND = {
     "Computer 2": "OTHER",
     "COMPUTER2": "OTHER",
     # USB sources
+    "USB": "USB",
     "USB Display": "USB",
     # Network
     "LAN": "LAN",
